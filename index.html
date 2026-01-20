@@ -8,10 +8,23 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        .editable-input { 
+            background: transparent; 
+            border: none; 
+            border-bottom: 2px dashed currentColor;
+            outline: none;
+            width: 100%;
+        }
+        .editable-input:focus {
+            border-bottom: 2px solid currentColor;
+        }
+        .hover-highlight:hover {
+            background: rgba(59, 130, 246, 0.1);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -20,31 +33,43 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Simple icon components
-        const Icon = ({ name, size = 18 }) => {
-            useEffect(() => {
-                lucide.createIcons();
-            });
-            return <i data-lucide={name} style={{ width: size, height: size }}></i>;
-        };
-
         const AxonChargerProposal = () => {
             const [activeSection, setActiveSection] = useState('overview');
-            const [editMode, setEditMode] = useState(false);
+            const [editMode, setEditMode] = useState(true); // Start in edit mode
             
-            const [projectSpecs, setProjectSpecs] = useState({
-                chargingBays: 6,
-                voltageRange: '10-17V',
-                maxCurrent: '7A per bay',
-                efficiency: '94% DC/DC, 90% AC/DC',
-                packCapacity: '6.38 Ah',
-                chemistry: 'LiPo',
-                operatingTemp: '0-40°C',
-                storageTemp: '-25-75°C'
+            // Header info - editable
+            const [headerInfo, setHeaderInfo] = useState({
+                projectTitle: 'Axon Thor Battery Charger',
+                subtitle: '6-Bay Intelligent Charging System',
+                companyName: 'Alium Batteries',
+                date: 'January 2026'
             });
+
+            // Charging Bay Specifications
+            const [projectSpecs, setProjectSpecs] = useState([
+                { id: 1, name: 'Charging Bays', value: '6' },
+                { id: 2, name: 'Voltage Range', value: '10-17V' },
+                { id: 3, name: 'Max Current', value: '7A per bay' },
+                { id: 4, name: 'Efficiency', value: '94% DC/DC, 90% AC/DC' },
+                { id: 5, name: 'Pack Capacity', value: '6.38 Ah' },
+                { id: 6, name: 'Chemistry', value: 'LiPo' },
+                { id: 7, name: 'Operating Temp', value: '0-40°C' },
+                { id: 8, name: 'Storage Temp', value: '-25-75°C' }
+            ]);
+
+            // External Power Supply Specifications
+            const [powerSupplySpecs, setPowerSupplySpecs] = useState([
+                { id: 1, name: 'Input Voltage', value: '100-240V AC' },
+                { id: 2, name: 'Input Frequency', value: '50/60 Hz' },
+                { id: 3, name: 'Output Power', value: '300W' },
+                { id: 4, name: 'Output Voltage', value: '24V DC' },
+                { id: 5, name: 'Efficiency', value: '90% typical' },
+                { id: 6, name: 'Power Factor', value: '>0.9' }
+            ]);
 
             const [stageGates, setStageGates] = useState([
                 {
+                    id: 1,
                     stage: 1,
                     name: 'Kick Off',
                     duration: '1-2 Weeks',
@@ -64,6 +89,7 @@
                     ]
                 },
                 {
+                    id: 2,
                     stage: 2,
                     name: 'Freeze Specifications',
                     duration: '2-3 Weeks',
@@ -86,6 +112,7 @@
                     ]
                 },
                 {
+                    id: 3,
                     stage: 3,
                     name: 'Proto Build Complete',
                     duration: '16-18 Weeks',
@@ -110,6 +137,7 @@
                     ]
                 },
                 {
+                    id: 4,
                     stage: 4,
                     name: 'Proto Testing Complete',
                     duration: '10-12 Weeks',
@@ -134,6 +162,7 @@
                     ]
                 },
                 {
+                    id: 5,
                     stage: 5,
                     name: 'DVT Build Complete',
                     duration: '14-16 Weeks',
@@ -156,6 +185,7 @@
                     ]
                 },
                 {
+                    id: 6,
                     stage: 6,
                     name: 'DVT Testing Complete',
                     duration: '12-14 Weeks',
@@ -178,6 +208,7 @@
                     ]
                 },
                 {
+                    id: 7,
                     stage: 7,
                     name: 'PPAP & Production Ready',
                     duration: '8-10 Weeks',
@@ -201,23 +232,19 @@
                 }
             ]);
 
-            const [costBreakdown, setCostBreakdown] = useState({
-                nreTotal: 270000,
-                toolingFixtures: 85000,
-                certificationTesting: 95000,
-                breakdown: [
-                    { item: 'Proto Tooling & Setup', cost: 18000 },
-                    { item: 'Proto 10 Samples', cost: 15000 },
-                    { item: 'Pre-Compliance Testing', cost: 28000 },
-                    { item: 'DVT Tooling', cost: 42000 },
-                    { item: 'DVT 25 Samples', cost: 35000 },
-                    { item: 'Test Fixtures', cost: 25000 },
-                    { item: 'Compliance Testing', cost: 95000 }
-                ]
-            });
+            const [costItems, setCostItems] = useState([
+                { id: 1, item: 'Proto Tooling & Setup', cost: 18000 },
+                { id: 2, item: 'Proto 10 Samples', cost: 15000 },
+                { id: 3, item: 'Pre-Compliance Testing', cost: 28000 },
+                { id: 4, item: 'DVT Tooling', cost: 42000 },
+                { id: 5, item: 'DVT 25 Samples', cost: 35000 },
+                { id: 6, item: 'Test Fixtures', cost: 25000 },
+                { id: 7, item: 'Compliance Testing', cost: 95000 }
+            ]);
 
             const [deliverableCategories, setDeliverableCategories] = useState([
                 {
+                    id: 1,
                     title: 'Electrical Design',
                     items: [
                         'Complete schematics for AC/DC and DC/DC',
@@ -230,6 +257,7 @@
                     ]
                 },
                 {
+                    id: 2,
                     title: 'Firmware & Software',
                     items: [
                         'Complete firmware source code',
@@ -242,6 +270,7 @@
                     ]
                 },
                 {
+                    id: 3,
                     title: 'Testing & Validation',
                     items: [
                         'Comprehensive DVT test reports',
@@ -254,6 +283,7 @@
                     ]
                 },
                 {
+                    id: 4,
                     title: 'Production Docs',
                     items: [
                         'PPAP documentation package',
@@ -267,132 +297,228 @@
                 }
             ]);
 
-            const addSpec = () => {
-                const key = prompt('Enter specification name:');
-                const value = prompt('Enter specification value:');
-                if (key && value) {
-                    setProjectSpecs({ ...projectSpecs, [key]: value });
-                }
-            };
-
-            const editSpec = (key) => {
-                const value = prompt('Edit value:', projectSpecs[key]);
-                if (value !== null) {
-                    setProjectSpecs({ ...projectSpecs, [key]: value });
-                }
-            };
-
-            const deleteSpec = (key) => {
-                if (confirm('Delete this specification?')) {
-                    const newSpecs = { ...projectSpecs };
-                    delete newSpecs[key];
-                    setProjectSpecs(newSpecs);
-                }
-            };
-
-            const updateStage = (index, field, value) => {
-                const newStages = [...stageGates];
-                newStages[index][field] = value;
-                setStageGates(newStages);
-            };
-
-            const addActivity = (stageIndex) => {
-                const activity = prompt('Enter new activity:');
-                if (activity) {
-                    const newStages = [...stageGates];
-                    newStages[stageIndex].activities.push(activity);
-                    setStageGates(newStages);
-                }
-            };
-
-            const deleteActivity = (stageIndex, activityIndex) => {
-                const newStages = [...stageGates];
-                newStages[stageIndex].activities.splice(activityIndex, 1);
-                setStageGates(newStages);
-            };
-
-            const addDeliverable = (stageIndex) => {
-                const deliverable = prompt('Enter new deliverable:');
-                if (deliverable) {
-                    const newStages = [...stageGates];
-                    newStages[stageIndex].deliverables.push(deliverable);
-                    setStageGates(newStages);
-                }
-            };
-
-            const deleteDeliverable = (stageIndex, deliverableIndex) => {
-                const newStages = [...stageGates];
-                newStages[stageIndex].deliverables.splice(deliverableIndex, 1);
-                setStageGates(newStages);
-            };
-
-            const addCostItem = () => {
-                const item = prompt('Enter cost item name:');
-                const cost = prompt('Enter cost amount:');
-                if (item && cost) {
-                    const newBreakdown = [...costBreakdown.breakdown];
-                    newBreakdown.push({ item, cost: parseInt(cost) });
-                    setCostBreakdown({ ...costBreakdown, breakdown: newBreakdown });
-                }
-            };
-
-            const deleteCostItem = (index) => {
-                if (confirm('Delete this cost item?')) {
-                    const newBreakdown = [...costBreakdown.breakdown];
-                    newBreakdown.splice(index, 1);
-                    setCostBreakdown({ ...costBreakdown, breakdown: newBreakdown });
-                }
-            };
-
-            const updateCostItem = (index, field, value) => {
-                const newBreakdown = [...costBreakdown.breakdown];
-                newBreakdown[index][field] = field === 'cost' ? parseInt(value) : value;
-                setCostBreakdown({ ...costBreakdown, breakdown: newBreakdown });
-            };
-
-            const addDeliverableCategory = () => {
-                const title = prompt('Enter category title:');
-                if (title) {
-                    setDeliverableCategories([...deliverableCategories, { title, items: [] }]);
-                }
-            };
-
-            const addDeliverableItem = (categoryIndex) => {
-                const item = prompt('Enter deliverable item:');
-                if (item) {
-                    const newCategories = [...deliverableCategories];
-                    newCategories[categoryIndex].items.push(item);
-                    setDeliverableCategories(newCategories);
-                }
-            };
-
-            const deleteDeliverableItem = (categoryIndex, itemIndex) => {
-                const newCategories = [...deliverableCategories];
-                newCategories[categoryIndex].items.splice(itemIndex, 1);
-                setDeliverableCategories(newCategories);
-            };
-
+            // Calculate totals
             const totalWeeks = stageGates.reduce((sum, stage) => {
                 const weeks = parseInt(stage.duration.split('-')[1]);
                 return sum + (isNaN(weeks) ? 0 : weeks);
             }, 0);
-
-            const totalNRE = stageGates.reduce((sum, s) => sum + s.nreCost, 0);
-            const totalTooling = costBreakdown.breakdown.reduce((sum, b) => sum + b.cost, 0);
+            const totalNRE = stageGates.reduce((sum, s) => sum + (parseInt(s.nreCost) || 0), 0);
+            const totalTooling = costItems.reduce((sum, b) => sum + (parseInt(b.cost) || 0), 0);
             const grandTotal = totalNRE + totalTooling;
+
+            // Save to localStorage
+            const saveData = () => {
+                const data = { headerInfo, projectSpecs, powerSupplySpecs, stageGates, costItems, deliverableCategories };
+                localStorage.setItem('axonProposal', JSON.stringify(data));
+                alert('Proposal saved locally!');
+            };
+
+            // Load from localStorage
+            useEffect(() => {
+                const saved = localStorage.getItem('axonProposal');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        if (data.headerInfo) setHeaderInfo(data.headerInfo);
+                        if (data.projectSpecs) setProjectSpecs(data.projectSpecs);
+                        if (data.powerSupplySpecs) setPowerSupplySpecs(data.powerSupplySpecs);
+                        if (data.stageGates) setStageGates(data.stageGates);
+                        if (data.costItems) setCostItems(data.costItems);
+                        if (data.deliverableCategories) setDeliverableCategories(data.deliverableCategories);
+                    } catch (e) {}
+                }
+            }, []);
+
+            // Export as JSON
+            const exportJSON = () => {
+                const data = { headerInfo, projectSpecs, powerSupplySpecs, stageGates, costItems, deliverableCategories };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'axon-proposal-data.json';
+                a.click();
+            };
+
+            // Import JSON
+            const importJSON = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            if (data.headerInfo) setHeaderInfo(data.headerInfo);
+                            if (data.projectSpecs) setProjectSpecs(data.projectSpecs);
+                            if (data.powerSupplySpecs) setPowerSupplySpecs(data.powerSupplySpecs);
+                            if (data.stageGates) setStageGates(data.stageGates);
+                            if (data.costItems) setCostItems(data.costItems);
+                            if (data.deliverableCategories) setDeliverableCategories(data.deliverableCategories);
+                            alert('Data imported successfully!');
+                        } catch (err) {
+                            alert('Error reading file');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+
+            // Charging Bay Spec handlers
+            const updateSpec = (id, field, value) => {
+                setProjectSpecs(projectSpecs.map(s => s.id === id ? { ...s, [field]: value } : s));
+            };
+            const addSpec = () => {
+                const newId = Math.max(...projectSpecs.map(s => s.id), 0) + 1;
+                setProjectSpecs([...projectSpecs, { id: newId, name: 'New Spec', value: 'Value' }]);
+            };
+            const deleteSpec = (id) => {
+                setProjectSpecs(projectSpecs.filter(s => s.id !== id));
+            };
+
+            // Power Supply Spec handlers
+            const updatePowerSpec = (id, field, value) => {
+                setPowerSupplySpecs(powerSupplySpecs.map(s => s.id === id ? { ...s, [field]: value } : s));
+            };
+            const addPowerSpec = () => {
+                const newId = Math.max(...powerSupplySpecs.map(s => s.id), 0) + 1;
+                setPowerSupplySpecs([...powerSupplySpecs, { id: newId, name: 'New Spec', value: 'Value' }]);
+            };
+            const deletePowerSpec = (id) => {
+                setPowerSupplySpecs(powerSupplySpecs.filter(s => s.id !== id));
+            };
+
+            // Stage handlers
+            const updateStage = (id, field, value) => {
+                setStageGates(stageGates.map(s => s.id === id ? { ...s, [field]: value } : s));
+            };
+            const addStage = () => {
+                const newId = Math.max(...stageGates.map(s => s.id), 0) + 1;
+                const newStageNum = stageGates.length + 1;
+                setStageGates([...stageGates, {
+                    id: newId,
+                    stage: newStageNum,
+                    name: 'New Stage',
+                    duration: '4-6 Weeks',
+                    nreCost: 10000,
+                    activities: ['Activity 1'],
+                    deliverables: ['Deliverable 1']
+                }]);
+            };
+            const deleteStage = (id) => {
+                const filtered = stageGates.filter(s => s.id !== id);
+                // Renumber stages
+                setStageGates(filtered.map((s, i) => ({ ...s, stage: i + 1 })));
+            };
+            const updateStageActivity = (stageId, idx, value) => {
+                setStageGates(stageGates.map(s => {
+                    if (s.id === stageId) {
+                        const newActivities = [...s.activities];
+                        newActivities[idx] = value;
+                        return { ...s, activities: newActivities };
+                    }
+                    return s;
+                }));
+            };
+            const addStageActivity = (stageId) => {
+                setStageGates(stageGates.map(s => {
+                    if (s.id === stageId) {
+                        return { ...s, activities: [...s.activities, 'New activity'] };
+                    }
+                    return s;
+                }));
+            };
+            const deleteStageActivity = (stageId, idx) => {
+                setStageGates(stageGates.map(s => {
+                    if (s.id === stageId) {
+                        const newActivities = s.activities.filter((_, i) => i !== idx);
+                        return { ...s, activities: newActivities };
+                    }
+                    return s;
+                }));
+            };
+            const updateStageDeliverable = (stageId, idx, value) => {
+                setStageGates(stageGates.map(s => {
+                    if (s.id === stageId) {
+                        const newDeliverables = [...s.deliverables];
+                        newDeliverables[idx] = value;
+                        return { ...s, deliverables: newDeliverables };
+                    }
+                    return s;
+                }));
+            };
+            const addStageDeliverable = (stageId) => {
+                setStageGates(stageGates.map(s => {
+                    if (s.id === stageId) {
+                        return { ...s, deliverables: [...s.deliverables, 'New deliverable'] };
+                    }
+                    return s;
+                }));
+            };
+            const deleteStageDeliverable = (stageId, idx) => {
+                setStageGates(stageGates.map(s => {
+                    if (s.id === stageId) {
+                        const newDeliverables = s.deliverables.filter((_, i) => i !== idx);
+                        return { ...s, deliverables: newDeliverables };
+                    }
+                    return s;
+                }));
+            };
+
+            // Cost handlers
+            const updateCostItem = (id, field, value) => {
+                setCostItems(costItems.map(c => c.id === id ? { ...c, [field]: field === 'cost' ? (parseInt(value) || 0) : value } : c));
+            };
+            const addCostItem = () => {
+                const newId = Math.max(...costItems.map(c => c.id), 0) + 1;
+                setCostItems([...costItems, { id: newId, item: 'New Cost Item', cost: 0 }]);
+            };
+            const deleteCostItem = (id) => {
+                setCostItems(costItems.filter(c => c.id !== id));
+            };
+
+            // Deliverable category handlers
+            const updateCategory = (id, field, value) => {
+                setDeliverableCategories(deliverableCategories.map(c => c.id === id ? { ...c, [field]: value } : c));
+            };
+            const addCategory = () => {
+                const newId = Math.max(...deliverableCategories.map(c => c.id), 0) + 1;
+                setDeliverableCategories([...deliverableCategories, { id: newId, title: 'New Category', items: ['Item 1'] }]);
+            };
+            const deleteCategory = (id) => {
+                setDeliverableCategories(deliverableCategories.filter(c => c.id !== id));
+            };
+            const updateCategoryItem = (catId, idx, value) => {
+                setDeliverableCategories(deliverableCategories.map(c => {
+                    if (c.id === catId) {
+                        const newItems = [...c.items];
+                        newItems[idx] = value;
+                        return { ...c, items: newItems };
+                    }
+                    return c;
+                }));
+            };
+            const addCategoryItem = (catId) => {
+                setDeliverableCategories(deliverableCategories.map(c => {
+                    if (c.id === catId) {
+                        return { ...c, items: [...c.items, 'New item'] };
+                    }
+                    return c;
+                }));
+            };
+            const deleteCategoryItem = (catId, idx) => {
+                setDeliverableCategories(deliverableCategories.map(c => {
+                    if (c.id === catId) {
+                        const newItems = c.items.filter((_, i) => i !== idx);
+                        return { ...c, items: newItems };
+                    }
+                    return c;
+                }));
+            };
 
             const renderOverview = () => (
                 <div className="space-y-6">
                     <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold text-blue-900">Thor (SP2) Battery Charger Development</h2>
-                            <button
-                                onClick={() => setEditMode(!editMode)}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-                            >
-                                {editMode ? '✕ Done' : '✎ Edit'}
-                            </button>
-                        </div>
+                        <h2 className="text-2xl font-bold text-blue-900 mb-4">Thor (SP2) Battery Charger Development</h2>
                         <div className="grid md:grid-cols-2 gap-4 text-sm">
                             <div>
                                 <p className="text-blue-700 font-semibold">Duration:</p>
@@ -405,28 +531,87 @@
                         </div>
                     </div>
 
+                    {/* Charging Bay Specifications */}
                     <div className="bg-white p-6 rounded-lg border border-gray-200">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold text-gray-800">Key Specifications</h3>
+                            <h3 className="text-xl font-bold text-gray-800">🔋 Charging Bay Specifications</h3>
                             {editMode && (
-                                <button onClick={addSpec} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1">
-                                    + Add Spec
+                                <button onClick={addSpec} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                    + Add Specification
                                 </button>
                             )}
                         </div>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {Object.entries(projectSpecs).map(([key, value]) => (
-                                <div key={key} className="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span className="text-gray-600 text-sm capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-gray-800">{value}</span>
-                                        {editMode && (
-                                            <div className="flex gap-1">
-                                                <button onClick={() => editSpec(key)} className="text-blue-600 hover:text-blue-800">✎</button>
-                                                <button onClick={() => deleteSpec(key)} className="text-red-600 hover:text-red-800">✕</button>
-                                            </div>
-                                        )}
-                                    </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            {projectSpecs.map((spec) => (
+                                <div key={spec.id} className="flex items-center gap-2 py-2 px-3 border border-gray-100 rounded-lg bg-gray-50">
+                                    {editMode ? (
+                                        <>
+                                            <input
+                                                type="text"
+                                                value={spec.name}
+                                                onChange={(e) => updateSpec(spec.id, 'name', e.target.value)}
+                                                className="flex-1 px-2 py-1 border rounded text-sm text-gray-600"
+                                                placeholder="Spec name"
+                                            />
+                                            <span className="text-gray-400">:</span>
+                                            <input
+                                                type="text"
+                                                value={spec.value}
+                                                onChange={(e) => updateSpec(spec.id, 'value', e.target.value)}
+                                                className="flex-1 px-2 py-1 border rounded text-sm font-semibold"
+                                                placeholder="Value"
+                                            />
+                                            <button onClick={() => deleteSpec(spec.id)} className="text-red-500 hover:text-red-700 px-1">✕</button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-gray-600 text-sm">{spec.name}:</span>
+                                            <span className="font-semibold text-gray-800 ml-auto">{spec.value}</span>
+                                        </>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* External Power Supply Specifications */}
+                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">⚡ External Power Supply Specifications</h3>
+                            {editMode && (
+                                <button onClick={addPowerSpec} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                    + Add Specification
+                                </button>
+                            )}
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-3">
+                            {powerSupplySpecs.map((spec) => (
+                                <div key={spec.id} className="flex items-center gap-2 py-2 px-3 border border-amber-100 rounded-lg bg-amber-50">
+                                    {editMode ? (
+                                        <>
+                                            <input
+                                                type="text"
+                                                value={spec.name}
+                                                onChange={(e) => updatePowerSpec(spec.id, 'name', e.target.value)}
+                                                className="flex-1 px-2 py-1 border rounded text-sm text-gray-600"
+                                                placeholder="Spec name"
+                                            />
+                                            <span className="text-gray-400">:</span>
+                                            <input
+                                                type="text"
+                                                value={spec.value}
+                                                onChange={(e) => updatePowerSpec(spec.id, 'value', e.target.value)}
+                                                className="flex-1 px-2 py-1 border rounded text-sm font-semibold"
+                                                placeholder="Value"
+                                            />
+                                            <button onClick={() => deletePowerSpec(spec.id)} className="text-red-500 hover:text-red-700 px-1">✕</button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-gray-600 text-sm">{spec.name}:</span>
+                                            <span className="font-semibold text-gray-800 ml-auto">{spec.value}</span>
+                                        </>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -440,30 +625,29 @@
                         <div className="flex justify-between items-center">
                             <div>
                                 <h2 className="text-2xl font-bold text-purple-900 mb-2">Development Timeline</h2>
-                                <p className="text-purple-700">{stageGates.length} Stage Gates</p>
+                                <p className="text-purple-700">{stageGates.length} Stage Gates • {totalWeeks} weeks total</p>
                             </div>
-                            <button
-                                onClick={() => setEditMode(!editMode)}
-                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
-                            >
-                                {editMode ? '✕ Done' : '✎ Edit'}
-                            </button>
+                            {editMode && (
+                                <button onClick={addStage} className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                                    + Add Stage
+                                </button>
+                            )}
                         </div>
                     </div>
 
-                    {stageGates.map((gate, index) => (
-                        <div key={gate.stage} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    {stageGates.map((gate) => (
+                        <div key={gate.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                             <div className="bg-blue-600 p-4 text-white">
-                                <div className="flex justify-between items-center">
+                                <div className="flex justify-between items-start">
                                     <div className="flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <h3 className="text-lg font-bold">Stage {gate.stage}:</h3>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-lg font-bold">Stage {gate.stage}:</span>
                                             {editMode ? (
                                                 <input
                                                     type="text"
                                                     value={gate.name}
-                                                    onChange={(e) => updateStage(index, 'name', e.target.value)}
-                                                    className="bg-blue-700 px-2 py-1 rounded text-white"
+                                                    onChange={(e) => updateStage(gate.id, 'name', e.target.value)}
+                                                    className="bg-blue-700 px-2 py-1 rounded text-white border-none text-lg font-bold"
                                                 />
                                             ) : (
                                                 <span className="text-lg font-bold">{gate.name}</span>
@@ -473,45 +657,64 @@
                                             <input
                                                 type="text"
                                                 value={gate.duration}
-                                                onChange={(e) => updateStage(index, 'duration', e.target.value)}
-                                                className="bg-blue-700 px-2 py-1 rounded text-blue-100 text-sm mt-1"
+                                                onChange={(e) => updateStage(gate.id, 'duration', e.target.value)}
+                                                className="bg-blue-700 px-2 py-1 rounded text-blue-100 text-sm"
+                                                placeholder="e.g. 4-6 Weeks"
                                             />
                                         ) : (
                                             <p className="text-blue-100 text-sm">{gate.duration}</p>
                                         )}
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-blue-100 text-xs">NRE Cost</p>
+                                        <p className="text-blue-100 text-xs mb-1">NRE Cost</p>
                                         {editMode ? (
-                                            <input
-                                                type="number"
-                                                value={gate.nreCost}
-                                                onChange={(e) => updateStage(index, 'nreCost', parseInt(e.target.value))}
-                                                className="bg-blue-700 px-2 py-1 rounded text-white text-xl font-bold w-24"
-                                            />
+                                            <div className="flex items-center gap-1">
+                                                <span>$</span>
+                                                <input
+                                                    type="number"
+                                                    value={gate.nreCost}
+                                                    onChange={(e) => updateStage(gate.id, 'nreCost', parseInt(e.target.value) || 0)}
+                                                    className="bg-blue-700 px-2 py-1 rounded text-white text-xl font-bold w-28 text-right"
+                                                />
+                                            </div>
                                         ) : (
-                                            <p className="text-xl font-bold">${(gate.nreCost / 1000).toFixed(0)}K</p>
+                                            <p className="text-xl font-bold">${gate.nreCost.toLocaleString()}</p>
+                                        )}
+                                        {editMode && (
+                                            <button onClick={() => deleteStage(gate.id)} className="mt-2 text-red-300 hover:text-red-100 text-sm">
+                                                Delete Stage
+                                            </button>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="p-6">
-                                <div className="mb-4">
-                                    <div className="flex justify-between items-center mb-2">
+                            <div className="p-6 grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <div className="flex justify-between items-center mb-3">
                                         <h4 className="font-semibold text-gray-800">Activities:</h4>
                                         {editMode && (
-                                            <button onClick={() => addActivity(index)} className="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                            <button onClick={() => addStageActivity(gate.id)} className="text-blue-600 hover:text-blue-800 text-sm">
                                                 + Add
                                             </button>
                                         )}
                                     </div>
-                                    <ul className="space-y-1">
+                                    <ul className="space-y-2">
                                         {gate.activities.map((activity, idx) => (
-                                            <li key={idx} className="text-sm text-gray-700 flex items-center justify-between">
-                                                <span>→ {activity}</span>
-                                                {editMode && (
-                                                    <button onClick={() => deleteActivity(index, idx)} className="text-red-600 hover:text-red-800">✕</button>
+                                            <li key={idx} className="flex items-center gap-2">
+                                                <span className="text-blue-500">→</span>
+                                                {editMode ? (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            value={activity}
+                                                            onChange={(e) => updateStageActivity(gate.id, idx, e.target.value)}
+                                                            className="flex-1 px-2 py-1 border rounded text-sm"
+                                                        />
+                                                        <button onClick={() => deleteStageActivity(gate.id, idx)} className="text-red-500 hover:text-red-700">✕</button>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-sm text-gray-700">{activity}</span>
                                                 )}
                                             </li>
                                         ))}
@@ -519,20 +722,30 @@
                                 </div>
 
                                 <div>
-                                    <div className="flex justify-between items-center mb-2">
+                                    <div className="flex justify-between items-center mb-3">
                                         <h4 className="font-semibold text-gray-800">Deliverables:</h4>
                                         {editMode && (
-                                            <button onClick={() => addDeliverable(index)} className="text-green-600 hover:text-green-800 flex items-center gap-1">
+                                            <button onClick={() => addStageDeliverable(gate.id)} className="text-green-600 hover:text-green-800 text-sm">
                                                 + Add
                                             </button>
                                         )}
                                     </div>
-                                    <ul className="space-y-1">
+                                    <ul className="space-y-2">
                                         {gate.deliverables.map((deliverable, idx) => (
-                                            <li key={idx} className="text-sm text-gray-700 flex items-center justify-between">
-                                                <span>✓ {deliverable}</span>
-                                                {editMode && (
-                                                    <button onClick={() => deleteDeliverable(index, idx)} className="text-red-600 hover:text-red-800">✕</button>
+                                            <li key={idx} className="flex items-center gap-2">
+                                                <span className="text-green-500">✓</span>
+                                                {editMode ? (
+                                                    <>
+                                                        <input
+                                                            type="text"
+                                                            value={deliverable}
+                                                            onChange={(e) => updateStageDeliverable(gate.id, idx, e.target.value)}
+                                                            className="flex-1 px-2 py-1 border rounded text-sm"
+                                                        />
+                                                        <button onClick={() => deleteStageDeliverable(gate.id, idx)} className="text-red-500 hover:text-red-700">✕</button>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-sm text-gray-700">{deliverable}</span>
                                                 )}
                                             </li>
                                         ))}
@@ -547,75 +760,71 @@
             const renderCosts = () => (
                 <div className="space-y-6">
                     <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold text-green-900">Investment Summary</h2>
-                            <button
-                                onClick={() => setEditMode(!editMode)}
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-                            >
-                                {editMode ? '✕ Done' : '✎ Edit'}
-                            </button>
-                        </div>
+                        <h2 className="text-2xl font-bold text-green-900 mb-4">Investment Summary</h2>
                         <div className="grid md:grid-cols-3 gap-4">
-                            <div className="bg-white p-4 rounded-lg">
+                            <div className="bg-white p-4 rounded-lg shadow-sm">
                                 <p className="text-green-700 text-sm font-semibold">NRE Development</p>
-                                <p className="text-3xl font-bold text-green-900">${(totalNRE / 1000).toFixed(0)}K</p>
+                                <p className="text-3xl font-bold text-green-900">${totalNRE.toLocaleString()}</p>
                             </div>
-                            <div className="bg-white p-4 rounded-lg">
+                            <div className="bg-white p-4 rounded-lg shadow-sm">
                                 <p className="text-green-700 text-sm font-semibold">Tooling & Testing</p>
-                                <p className="text-3xl font-bold text-green-900">${(totalTooling / 1000).toFixed(0)}K</p>
+                                <p className="text-3xl font-bold text-green-900">${totalTooling.toLocaleString()}</p>
                             </div>
-                            <div className="bg-white p-4 rounded-lg">
+                            <div className="bg-white p-4 rounded-lg shadow-sm border-2 border-green-400">
                                 <p className="text-green-700 text-sm font-semibold">Total Investment</p>
-                                <p className="text-3xl font-bold text-green-900">${(grandTotal / 1000).toFixed(0)}K</p>
+                                <p className="text-3xl font-bold text-green-900">${grandTotal.toLocaleString()}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white p-6 rounded-lg border border-gray-200">
                         <h3 className="text-xl font-bold text-gray-800 mb-4">NRE by Stage Gate</h3>
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {stageGates.map((gate) => (
-                                <div key={gate.stage} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <div key={gate.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                     <div>
                                         <p className="font-semibold text-gray-800">Stage {gate.stage}: {gate.name}</p>
                                         <p className="text-sm text-gray-600">{gate.duration}</p>
                                     </div>
-                                    <p className="text-lg font-bold text-blue-600">${gate.nreCost.toLocaleString()}</p>
+                                    <p className="text-lg font-bold text-blue-600">${(parseInt(gate.nreCost) || 0).toLocaleString()}</p>
                                 </div>
                             ))}
+                            <div className="flex justify-between items-center p-3 bg-blue-100 rounded-lg border-2 border-blue-300">
+                                <p className="font-bold text-blue-900">Total NRE</p>
+                                <p className="text-xl font-bold text-blue-900">${totalNRE.toLocaleString()}</p>
+                            </div>
                         </div>
                     </div>
 
                     <div className="bg-white p-6 rounded-lg border border-gray-200">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold text-gray-800">Tooling & Testing</h3>
+                            <h3 className="text-xl font-bold text-gray-800">Tooling, Samples & Testing</h3>
                             {editMode && (
-                                <button onClick={addCostItem} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1">
-                                    + Add Item
+                                <button onClick={addCostItem} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                                    + Add Cost Item
                                 </button>
                             )}
                         </div>
-                        <div className="space-y-3">
-                            {costBreakdown.breakdown.map((item, idx) => (
-                                <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div className="space-y-2">
+                            {costItems.map((item) => (
+                                <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                     {editMode ? (
                                         <>
                                             <input
                                                 type="text"
                                                 value={item.item}
-                                                onChange={(e) => updateCostItem(idx, 'item', e.target.value)}
-                                                className="flex-1 px-2 py-1 border rounded"
+                                                onChange={(e) => updateCostItem(item.id, 'item', e.target.value)}
+                                                className="flex-1 px-2 py-1 border rounded mr-4"
                                             />
                                             <div className="flex items-center gap-2">
                                                 <span className="text-gray-600">$</span>
                                                 <input
                                                     type="number"
                                                     value={item.cost}
-                                                    onChange={(e) => updateCostItem(idx, 'cost', e.target.value)}
-                                                    className="w-32 px-2 py-1 border rounded font-semibold"
+                                                    onChange={(e) => updateCostItem(item.id, 'cost', e.target.value)}
+                                                    className="w-28 px-2 py-1 border rounded font-semibold text-right"
                                                 />
-                                                <button onClick={() => deleteCostItem(idx)} className="text-red-600 hover:text-red-800">✕</button>
+                                                <button onClick={() => deleteCostItem(item.id)} className="text-red-500 hover:text-red-700 ml-2">✕</button>
                                             </div>
                                         </>
                                     ) : (
@@ -626,6 +835,10 @@
                                     )}
                                 </div>
                             ))}
+                            <div className="flex justify-between items-center p-3 bg-green-100 rounded-lg border-2 border-green-300">
+                                <p className="font-bold text-green-900">Total Tooling & Testing</p>
+                                <p className="text-xl font-bold text-green-900">${totalTooling.toLocaleString()}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -639,38 +852,51 @@
                                 <h2 className="text-2xl font-bold text-indigo-900 mb-2">Complete Deliverables</h2>
                                 <p className="text-indigo-700">Comprehensive documentation and source files</p>
                             </div>
-                            <button
-                                onClick={() => setEditMode(!editMode)}
-                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2"
-                            >
-                                {editMode ? '✕ Done' : '✎ Edit'}
-                            </button>
+                            {editMode && (
+                                <button onClick={addCategory} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                    + Add Category
+                                </button>
+                            )}
                         </div>
                     </div>
 
-                    {editMode && (
-                        <button onClick={addDeliverableCategory} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
-                            + Add Category
-                        </button>
-                    )}
-
                     <div className="grid md:grid-cols-2 gap-6">
-                        {deliverableCategories.map((category, catIndex) => (
-                            <div key={catIndex} className="bg-white p-6 rounded-lg border border-gray-200">
+                        {deliverableCategories.map((category) => (
+                            <div key={category.id} className="bg-white p-6 rounded-lg border border-gray-200">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
+                                    {editMode ? (
+                                        <input
+                                            type="text"
+                                            value={category.title}
+                                            onChange={(e) => updateCategory(category.id, 'title', e.target.value)}
+                                            className="text-lg font-bold text-gray-800 px-2 py-1 border rounded flex-1 mr-2"
+                                        />
+                                    ) : (
+                                        <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
+                                    )}
                                     {editMode && (
-                                        <button onClick={() => addDeliverableItem(catIndex)} className="text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                                            + Add
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => addCategoryItem(category.id)} className="text-blue-600 hover:text-blue-800 text-sm">+ Add</button>
+                                            <button onClick={() => deleteCategory(category.id)} className="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                                        </div>
                                     )}
                                 </div>
-                                <ul className="space-y-2 text-sm text-gray-700">
-                                    {category.items.map((item, itemIndex) => (
-                                        <li key={itemIndex} className="flex items-center justify-between">
-                                            <span>• {item}</span>
-                                            {editMode && (
-                                                <button onClick={() => deleteDeliverableItem(catIndex, itemIndex)} className="text-red-600 hover:text-red-800">✕</button>
+                                <ul className="space-y-2">
+                                    {category.items.map((item, idx) => (
+                                        <li key={idx} className="flex items-center gap-2 text-sm text-gray-700">
+                                            <span className="text-indigo-500">•</span>
+                                            {editMode ? (
+                                                <>
+                                                    <input
+                                                        type="text"
+                                                        value={item}
+                                                        onChange={(e) => updateCategoryItem(category.id, idx, e.target.value)}
+                                                        className="flex-1 px-2 py-1 border rounded"
+                                                    />
+                                                    <button onClick={() => deleteCategoryItem(category.id, idx)} className="text-red-500 hover:text-red-700">✕</button>
+                                                </>
+                                            ) : (
+                                                <span>{item}</span>
                                             )}
                                         </li>
                                     ))}
@@ -683,56 +909,118 @@
 
             return (
                 <div className="min-h-screen bg-gray-50">
+                    {/* Editable Header */}
                     <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
                         <div className="max-w-6xl mx-auto">
-                            <h1 className="text-4xl font-bold mb-2">Axon Thor Battery Charger</h1>
-                            <p className="text-blue-100 text-lg">6-Bay Intelligent Charging System</p>
-                            <div className="mt-4 flex gap-4 text-sm">
-                                <div className="bg-blue-700 px-4 py-2 rounded">Alium Batteries</div>
-                                <div className="bg-blue-700 px-4 py-2 rounded">January 2026</div>
-                            </div>
+                            {editMode ? (
+                                <>
+                                    <input
+                                        type="text"
+                                        value={headerInfo.projectTitle}
+                                        onChange={(e) => setHeaderInfo({ ...headerInfo, projectTitle: e.target.value })}
+                                        className="text-4xl font-bold mb-2 bg-blue-700 px-3 py-1 rounded w-full"
+                                        placeholder="Project Title"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={headerInfo.subtitle}
+                                        onChange={(e) => setHeaderInfo({ ...headerInfo, subtitle: e.target.value })}
+                                        className="text-lg bg-blue-700 px-3 py-1 rounded w-full text-blue-100"
+                                        placeholder="Subtitle"
+                                    />
+                                    <div className="mt-4 flex gap-4 text-sm">
+                                        <input
+                                            type="text"
+                                            value={headerInfo.companyName}
+                                            onChange={(e) => setHeaderInfo({ ...headerInfo, companyName: e.target.value })}
+                                            className="bg-blue-700 px-4 py-2 rounded"
+                                            placeholder="Company Name"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={headerInfo.date}
+                                            onChange={(e) => setHeaderInfo({ ...headerInfo, date: e.target.value })}
+                                            className="bg-blue-700 px-4 py-2 rounded"
+                                            placeholder="Date"
+                                        />
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <h1 className="text-4xl font-bold mb-2">{headerInfo.projectTitle}</h1>
+                                    <p className="text-blue-100 text-lg">{headerInfo.subtitle}</p>
+                                    <div className="mt-4 flex gap-4 text-sm">
+                                        <div className="bg-blue-700 px-4 py-2 rounded">{headerInfo.companyName}</div>
+                                        <div className="bg-blue-700 px-4 py-2 rounded">{headerInfo.date}</div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
+                    {/* Navigation & Controls */}
                     <div className="bg-white border-b sticky top-0 z-10 shadow">
                         <div className="max-w-6xl mx-auto px-8">
-                            <div className="flex gap-2 py-4 flex-wrap">
-                                <button
-                                    onClick={() => setActiveSection('overview')}
-                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
-                                        activeSection === 'overview' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
-                                    }`}
-                                >
-                                    📄 Overview
-                                </button>
-                                <button
-                                    onClick={() => setActiveSection('timeline')}
-                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
-                                        activeSection === 'timeline' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
-                                    }`}
-                                >
-                                    📅 Timeline
-                                </button>
-                                <button
-                                    onClick={() => setActiveSection('costs')}
-                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
-                                        activeSection === 'costs' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
-                                    }`}
-                                >
-                                    💰 Costs
-                                </button>
-                                <button
-                                    onClick={() => setActiveSection('deliverables')}
-                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
-                                        activeSection === 'deliverables' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
-                                    }`}
-                                >
-                                    ⚙️ Deliverables
-                                </button>
+                            <div className="flex items-center justify-between py-4 flex-wrap gap-2">
+                                <div className="flex gap-2 flex-wrap">
+                                    <button
+                                        onClick={() => setActiveSection('overview')}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium ${
+                                            activeSection === 'overview' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        📄 Overview
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveSection('timeline')}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium ${
+                                            activeSection === 'timeline' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        📅 Timeline
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveSection('costs')}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium ${
+                                            activeSection === 'costs' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        💰 Costs
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveSection('deliverables')}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium ${
+                                            activeSection === 'deliverables' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        ⚙️ Deliverables
+                                    </button>
+                                </div>
+                                <div className="flex gap-2 items-center flex-wrap">
+                                    <button
+                                        onClick={() => setEditMode(!editMode)}
+                                        className={`px-4 py-2 rounded-lg font-medium ${
+                                            editMode ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700'
+                                        }`}
+                                    >
+                                        {editMode ? '✎ Editing ON' : '✎ Edit Mode'}
+                                    </button>
+                                    <button onClick={saveData} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                        💾 Save
+                                    </button>
+                                    <button onClick={exportJSON} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        📤 Export
+                                    </button>
+                                    <label className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 cursor-pointer">
+                                        📥 Import
+                                        <input type="file" accept=".json" onChange={importJSON} className="hidden" />
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+                    {/* Content */}
                     <div className="max-w-6xl mx-auto p-8">
                         {activeSection === 'overview' && renderOverview()}
                         {activeSection === 'timeline' && renderTimeline()}
@@ -740,9 +1028,10 @@
                         {activeSection === 'deliverables' && renderDeliverables()}
                     </div>
 
+                    {/* Footer */}
                     <div className="bg-gray-800 text-white p-6 mt-8">
                         <div className="max-w-6xl mx-auto text-center text-sm text-gray-400">
-                            <p>Confidential Proposal | Alium Batteries © 2026</p>
+                            <p>Confidential Proposal | {headerInfo.companyName} © 2026</p>
                             <p className="mt-1">Prepared for Axon Enterprise</p>
                         </div>
                     </div>
