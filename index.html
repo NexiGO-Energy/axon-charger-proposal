@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axon Thor Battery Charger Proposal | Alium Batteries</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Simple icon components
+        const Icon = ({ name, size = 18 }) => {
+            useEffect(() => {
+                lucide.createIcons();
+            });
+            return <i data-lucide={name} style={{ width: size, height: size }}></i>;
+        };
+
+        const AxonChargerProposal = () => {
+            const [activeSection, setActiveSection] = useState('overview');
+            const [editMode, setEditMode] = useState(false);
+            
+            const [projectSpecs, setProjectSpecs] = useState({
+                chargingBays: 6,
+                voltageRange: '10-17V',
+                maxCurrent: '7A per bay',
+                efficiency: '94% DC/DC, 90% AC/DC',
+                packCapacity: '6.38 Ah',
+                chemistry: 'LiPo',
+                operatingTemp: '0-40°C',
+                storageTemp: '-25-75°C'
+            });
+
+            const [stageGates, setStageGates] = useState([
+                {
+                    stage: 1,
+                    name: 'Kick Off',
+                    duration: '1-2 Weeks',
+                    nreCost: 8000,
+                    activities: [
+                        'Conduct kick-off meeting with Axon',
+                        'Establish project team and protocols',
+                        'Review mechanical design package',
+                        'Initiate risk assessment',
+                        'Define testing fixture requirements'
+                    ],
+                    deliverables: [
+                        'Project charter',
+                        'Risk assessment report',
+                        'Specification confirmation',
+                        'Thermal analysis plan'
+                    ]
+                },
+                {
+                    stage: 2,
+                    name: 'Freeze Specifications',
+                    duration: '2-3 Weeks',
+                    nreCost: 35000,
+                    activities: [
+                        'Develop system architecture',
+                        'Select power topology',
+                        'Choose core components',
+                        'Design SMBus architecture',
+                        'Develop scaling algorithm',
+                        'Create preliminary schematics',
+                        'Define cooling strategy'
+                    ],
+                    deliverables: [
+                        'Finalized specifications',
+                        'Electrical architecture',
+                        'Component selection report',
+                        'Thermal simulation',
+                        'Verification testing plan'
+                    ]
+                },
+                {
+                    stage: 3,
+                    name: 'Proto Build Complete',
+                    duration: '16-18 Weeks',
+                    nreCost: 62000,
+                    activities: [
+                        'Design AC/DC power supply',
+                        'Design DC/DC converters',
+                        'Implement protection circuits',
+                        'Design SMBus interface',
+                        'Develop charge control firmware',
+                        'Design thermal management',
+                        'Create PCB layout',
+                        'Fabricate 10 prototypes'
+                    ],
+                    deliverables: [
+                        'Complete schematics',
+                        'PCB layout and BOM',
+                        'Firmware source code',
+                        'SMBus protocol docs',
+                        '10 prototype units',
+                        'Test fixtures'
+                    ]
+                },
+                {
+                    stage: 4,
+                    name: 'Proto Testing Complete',
+                    duration: '10-12 Weeks',
+                    nreCost: 58000,
+                    activities: [
+                        'Efficiency testing',
+                        'Verify current scaling',
+                        'Test SMBus communication',
+                        'Validate protection circuits',
+                        'Thermal testing',
+                        'Acoustic noise testing',
+                        'Environmental testing',
+                        'Pre-compliance EMI/EMC'
+                    ],
+                    deliverables: [
+                        'Test reports',
+                        'Efficiency curves',
+                        'Thermal analysis',
+                        'EMI/EMC reports',
+                        'Firmware validation',
+                        'Optimization recommendations'
+                    ]
+                },
+                {
+                    stage: 5,
+                    name: 'DVT Build Complete',
+                    duration: '14-16 Weeks',
+                    nreCost: 22000,
+                    activities: [
+                        'Refine design',
+                        'Optimize PCB layout',
+                        'Finalize component sourcing',
+                        'Kick off tooling',
+                        'Update firmware',
+                        'Build 25 DVT units'
+                    ],
+                    deliverables: [
+                        'Finalized schematics',
+                        'Production BOM',
+                        'DFMEA',
+                        'Tooling quotes',
+                        '25 DVT units',
+                        'Updated firmware'
+                    ]
+                },
+                {
+                    stage: 6,
+                    name: 'DVT Testing Complete',
+                    duration: '12-14 Weeks',
+                    nreCost: 65000,
+                    activities: [
+                        'Full regulatory testing',
+                        'Complete EMC testing',
+                        'Safety certification',
+                        'Comprehensive DVT testing',
+                        'Reliability testing',
+                        'Environmental screening',
+                        'RoHS/REACH verification'
+                    ],
+                    deliverables: [
+                        'Regulatory certificates',
+                        'Complete DVT reports',
+                        'Reliability analysis',
+                        'Compliance documentation',
+                        'PFMEA'
+                    ]
+                },
+                {
+                    stage: 7,
+                    name: 'PPAP & Production Ready',
+                    duration: '8-10 Weeks',
+                    nreCost: 20000,
+                    activities: [
+                        'Compile design package',
+                        'Final design review',
+                        'Prepare production docs',
+                        'Support production setup',
+                        'Train production team',
+                        'Validate test fixtures'
+                    ],
+                    deliverables: [
+                        'Complete source files',
+                        'PPAP documentation',
+                        'Production instructions',
+                        'Test fixture docs',
+                        'Final project report',
+                        'Certificate of Conformance'
+                    ]
+                }
+            ]);
+
+            const [costBreakdown, setCostBreakdown] = useState({
+                nreTotal: 270000,
+                toolingFixtures: 85000,
+                certificationTesting: 95000,
+                breakdown: [
+                    { item: 'Proto Tooling & Setup', cost: 18000 },
+                    { item: 'Proto 10 Samples', cost: 15000 },
+                    { item: 'Pre-Compliance Testing', cost: 28000 },
+                    { item: 'DVT Tooling', cost: 42000 },
+                    { item: 'DVT 25 Samples', cost: 35000 },
+                    { item: 'Test Fixtures', cost: 25000 },
+                    { item: 'Compliance Testing', cost: 95000 }
+                ]
+            });
+
+            const [deliverableCategories, setDeliverableCategories] = useState([
+                {
+                    title: 'Electrical Design',
+                    items: [
+                        'Complete schematics for AC/DC and DC/DC',
+                        'PCB layout files (Gerber, ODB++)',
+                        'Bill of Materials with alternates',
+                        'Component derating analysis',
+                        'Power supply calculations',
+                        'Protection circuit specs',
+                        'DFMEA documentation'
+                    ]
+                },
+                {
+                    title: 'Firmware & Software',
+                    items: [
+                        'Complete firmware source code',
+                        'Charge control algorithms',
+                        'SMBus protocol implementation',
+                        'Current scaling logic',
+                        'State machine diagrams',
+                        'Field update procedures',
+                        'Software DFMEA'
+                    ]
+                },
+                {
+                    title: 'Testing & Validation',
+                    items: [
+                        'Comprehensive DVT test reports',
+                        'Efficiency characterization data',
+                        'Thermal analysis results',
+                        'EMI/EMC test reports',
+                        'Safety certification reports',
+                        'Reliability analysis (MTBF)',
+                        'Environmental testing results'
+                    ]
+                },
+                {
+                    title: 'Production Docs',
+                    items: [
+                        'PPAP documentation package',
+                        'PFMEA (Process FMEA)',
+                        'Assembly work instructions',
+                        'Test fixture documentation',
+                        'Quality control procedures',
+                        'Certificate of Conformance',
+                        'RoHS/REACH compliance'
+                    ]
+                }
+            ]);
+
+            const addSpec = () => {
+                const key = prompt('Enter specification name:');
+                const value = prompt('Enter specification value:');
+                if (key && value) {
+                    setProjectSpecs({ ...projectSpecs, [key]: value });
+                }
+            };
+
+            const editSpec = (key) => {
+                const value = prompt('Edit value:', projectSpecs[key]);
+                if (value !== null) {
+                    setProjectSpecs({ ...projectSpecs, [key]: value });
+                }
+            };
+
+            const deleteSpec = (key) => {
+                if (confirm('Delete this specification?')) {
+                    const newSpecs = { ...projectSpecs };
+                    delete newSpecs[key];
+                    setProjectSpecs(newSpecs);
+                }
+            };
+
+            const updateStage = (index, field, value) => {
+                const newStages = [...stageGates];
+                newStages[index][field] = value;
+                setStageGates(newStages);
+            };
+
+            const addActivity = (stageIndex) => {
+                const activity = prompt('Enter new activity:');
+                if (activity) {
+                    const newStages = [...stageGates];
+                    newStages[stageIndex].activities.push(activity);
+                    setStageGates(newStages);
+                }
+            };
+
+            const deleteActivity = (stageIndex, activityIndex) => {
+                const newStages = [...stageGates];
+                newStages[stageIndex].activities.splice(activityIndex, 1);
+                setStageGates(newStages);
+            };
+
+            const addDeliverable = (stageIndex) => {
+                const deliverable = prompt('Enter new deliverable:');
+                if (deliverable) {
+                    const newStages = [...stageGates];
+                    newStages[stageIndex].deliverables.push(deliverable);
+                    setStageGates(newStages);
+                }
+            };
+
+            const deleteDeliverable = (stageIndex, deliverableIndex) => {
+                const newStages = [...stageGates];
+                newStages[stageIndex].deliverables.splice(deliverableIndex, 1);
+                setStageGates(newStages);
+            };
+
+            const addCostItem = () => {
+                const item = prompt('Enter cost item name:');
+                const cost = prompt('Enter cost amount:');
+                if (item && cost) {
+                    const newBreakdown = [...costBreakdown.breakdown];
+                    newBreakdown.push({ item, cost: parseInt(cost) });
+                    setCostBreakdown({ ...costBreakdown, breakdown: newBreakdown });
+                }
+            };
+
+            const deleteCostItem = (index) => {
+                if (confirm('Delete this cost item?')) {
+                    const newBreakdown = [...costBreakdown.breakdown];
+                    newBreakdown.splice(index, 1);
+                    setCostBreakdown({ ...costBreakdown, breakdown: newBreakdown });
+                }
+            };
+
+            const updateCostItem = (index, field, value) => {
+                const newBreakdown = [...costBreakdown.breakdown];
+                newBreakdown[index][field] = field === 'cost' ? parseInt(value) : value;
+                setCostBreakdown({ ...costBreakdown, breakdown: newBreakdown });
+            };
+
+            const addDeliverableCategory = () => {
+                const title = prompt('Enter category title:');
+                if (title) {
+                    setDeliverableCategories([...deliverableCategories, { title, items: [] }]);
+                }
+            };
+
+            const addDeliverableItem = (categoryIndex) => {
+                const item = prompt('Enter deliverable item:');
+                if (item) {
+                    const newCategories = [...deliverableCategories];
+                    newCategories[categoryIndex].items.push(item);
+                    setDeliverableCategories(newCategories);
+                }
+            };
+
+            const deleteDeliverableItem = (categoryIndex, itemIndex) => {
+                const newCategories = [...deliverableCategories];
+                newCategories[categoryIndex].items.splice(itemIndex, 1);
+                setDeliverableCategories(newCategories);
+            };
+
+            const totalWeeks = stageGates.reduce((sum, stage) => {
+                const weeks = parseInt(stage.duration.split('-')[1]);
+                return sum + (isNaN(weeks) ? 0 : weeks);
+            }, 0);
+
+            const totalNRE = stageGates.reduce((sum, s) => sum + s.nreCost, 0);
+            const totalTooling = costBreakdown.breakdown.reduce((sum, b) => sum + b.cost, 0);
+            const grandTotal = totalNRE + totalTooling;
+
+            const renderOverview = () => (
+                <div className="space-y-6">
+                    <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-bold text-blue-900">Thor (SP2) Battery Charger Development</h2>
+                            <button
+                                onClick={() => setEditMode(!editMode)}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                            >
+                                {editMode ? '✕ Done' : '✎ Edit'}
+                            </button>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p className="text-blue-700 font-semibold">Duration:</p>
+                                <p className="text-blue-900 text-lg font-bold">{totalWeeks} weeks</p>
+                            </div>
+                            <div>
+                                <p className="text-blue-700 font-semibold">Total Investment:</p>
+                                <p className="text-blue-900 text-lg font-bold">${grandTotal.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">Key Specifications</h3>
+                            {editMode && (
+                                <button onClick={addSpec} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1">
+                                    + Add Spec
+                                </button>
+                            )}
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {Object.entries(projectSpecs).map(([key, value]) => (
+                                <div key={key} className="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span className="text-gray-600 text-sm capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-semibold text-gray-800">{value}</span>
+                                        {editMode && (
+                                            <div className="flex gap-1">
+                                                <button onClick={() => editSpec(key)} className="text-blue-600 hover:text-blue-800">✎</button>
+                                                <button onClick={() => deleteSpec(key)} className="text-red-600 hover:text-red-800">✕</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderTimeline = () => (
+                <div className="space-y-4">
+                    <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h2 className="text-2xl font-bold text-purple-900 mb-2">Development Timeline</h2>
+                                <p className="text-purple-700">{stageGates.length} Stage Gates</p>
+                            </div>
+                            <button
+                                onClick={() => setEditMode(!editMode)}
+                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
+                            >
+                                {editMode ? '✕ Done' : '✎ Edit'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {stageGates.map((gate, index) => (
+                        <div key={gate.stage} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <div className="bg-blue-600 p-4 text-white">
+                                <div className="flex justify-between items-center">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="text-lg font-bold">Stage {gate.stage}:</h3>
+                                            {editMode ? (
+                                                <input
+                                                    type="text"
+                                                    value={gate.name}
+                                                    onChange={(e) => updateStage(index, 'name', e.target.value)}
+                                                    className="bg-blue-700 px-2 py-1 rounded text-white"
+                                                />
+                                            ) : (
+                                                <span className="text-lg font-bold">{gate.name}</span>
+                                            )}
+                                        </div>
+                                        {editMode ? (
+                                            <input
+                                                type="text"
+                                                value={gate.duration}
+                                                onChange={(e) => updateStage(index, 'duration', e.target.value)}
+                                                className="bg-blue-700 px-2 py-1 rounded text-blue-100 text-sm mt-1"
+                                            />
+                                        ) : (
+                                            <p className="text-blue-100 text-sm">{gate.duration}</p>
+                                        )}
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-blue-100 text-xs">NRE Cost</p>
+                                        {editMode ? (
+                                            <input
+                                                type="number"
+                                                value={gate.nreCost}
+                                                onChange={(e) => updateStage(index, 'nreCost', parseInt(e.target.value))}
+                                                className="bg-blue-700 px-2 py-1 rounded text-white text-xl font-bold w-24"
+                                            />
+                                        ) : (
+                                            <p className="text-xl font-bold">${(gate.nreCost / 1000).toFixed(0)}K</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6">
+                                <div className="mb-4">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h4 className="font-semibold text-gray-800">Activities:</h4>
+                                        {editMode && (
+                                            <button onClick={() => addActivity(index)} className="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                                + Add
+                                            </button>
+                                        )}
+                                    </div>
+                                    <ul className="space-y-1">
+                                        {gate.activities.map((activity, idx) => (
+                                            <li key={idx} className="text-sm text-gray-700 flex items-center justify-between">
+                                                <span>→ {activity}</span>
+                                                {editMode && (
+                                                    <button onClick={() => deleteActivity(index, idx)} className="text-red-600 hover:text-red-800">✕</button>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h4 className="font-semibold text-gray-800">Deliverables:</h4>
+                                        {editMode && (
+                                            <button onClick={() => addDeliverable(index)} className="text-green-600 hover:text-green-800 flex items-center gap-1">
+                                                + Add
+                                            </button>
+                                        )}
+                                    </div>
+                                    <ul className="space-y-1">
+                                        {gate.deliverables.map((deliverable, idx) => (
+                                            <li key={idx} className="text-sm text-gray-700 flex items-center justify-between">
+                                                <span>✓ {deliverable}</span>
+                                                {editMode && (
+                                                    <button onClick={() => deleteDeliverable(index, idx)} className="text-red-600 hover:text-red-800">✕</button>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+
+            const renderCosts = () => (
+                <div className="space-y-6">
+                    <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-bold text-green-900">Investment Summary</h2>
+                            <button
+                                onClick={() => setEditMode(!editMode)}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+                            >
+                                {editMode ? '✕ Done' : '✎ Edit'}
+                            </button>
+                        </div>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <div className="bg-white p-4 rounded-lg">
+                                <p className="text-green-700 text-sm font-semibold">NRE Development</p>
+                                <p className="text-3xl font-bold text-green-900">${(totalNRE / 1000).toFixed(0)}K</p>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg">
+                                <p className="text-green-700 text-sm font-semibold">Tooling & Testing</p>
+                                <p className="text-3xl font-bold text-green-900">${(totalTooling / 1000).toFixed(0)}K</p>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg">
+                                <p className="text-green-700 text-sm font-semibold">Total Investment</p>
+                                <p className="text-3xl font-bold text-green-900">${(grandTotal / 1000).toFixed(0)}K</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">NRE by Stage Gate</h3>
+                        <div className="space-y-3">
+                            {stageGates.map((gate) => (
+                                <div key={gate.stage} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p className="font-semibold text-gray-800">Stage {gate.stage}: {gate.name}</p>
+                                        <p className="text-sm text-gray-600">{gate.duration}</p>
+                                    </div>
+                                    <p className="text-lg font-bold text-blue-600">${gate.nreCost.toLocaleString()}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-lg border border-gray-200">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">Tooling & Testing</h3>
+                            {editMode && (
+                                <button onClick={addCostItem} className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1">
+                                    + Add Item
+                                </button>
+                            )}
+                        </div>
+                        <div className="space-y-3">
+                            {costBreakdown.breakdown.map((item, idx) => (
+                                <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    {editMode ? (
+                                        <>
+                                            <input
+                                                type="text"
+                                                value={item.item}
+                                                onChange={(e) => updateCostItem(idx, 'item', e.target.value)}
+                                                className="flex-1 px-2 py-1 border rounded"
+                                            />
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-gray-600">$</span>
+                                                <input
+                                                    type="number"
+                                                    value={item.cost}
+                                                    onChange={(e) => updateCostItem(idx, 'cost', e.target.value)}
+                                                    className="w-32 px-2 py-1 border rounded font-semibold"
+                                                />
+                                                <button onClick={() => deleteCostItem(idx)} className="text-red-600 hover:text-red-800">✕</button>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="text-gray-800">{item.item}</p>
+                                            <p className="font-semibold text-gray-900">${item.cost.toLocaleString()}</p>
+                                        </>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderDeliverables = () => (
+                <div className="space-y-6">
+                    <div className="bg-indigo-50 p-6 rounded-lg border border-indigo-200">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h2 className="text-2xl font-bold text-indigo-900 mb-2">Complete Deliverables</h2>
+                                <p className="text-indigo-700">Comprehensive documentation and source files</p>
+                            </div>
+                            <button
+                                onClick={() => setEditMode(!editMode)}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+                            >
+                                {editMode ? '✕ Done' : '✎ Edit'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {editMode && (
+                        <button onClick={addDeliverableCategory} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+                            + Add Category
+                        </button>
+                    )}
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        {deliverableCategories.map((category, catIndex) => (
+                            <div key={catIndex} className="bg-white p-6 rounded-lg border border-gray-200">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
+                                    {editMode && (
+                                        <button onClick={() => addDeliverableItem(catIndex)} className="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                                            + Add
+                                        </button>
+                                    )}
+                                </div>
+                                <ul className="space-y-2 text-sm text-gray-700">
+                                    {category.items.map((item, itemIndex) => (
+                                        <li key={itemIndex} className="flex items-center justify-between">
+                                            <span>• {item}</span>
+                                            {editMode && (
+                                                <button onClick={() => deleteDeliverableItem(catIndex, itemIndex)} className="text-red-600 hover:text-red-800">✕</button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
+                        <div className="max-w-6xl mx-auto">
+                            <h1 className="text-4xl font-bold mb-2">Axon Thor Battery Charger</h1>
+                            <p className="text-blue-100 text-lg">6-Bay Intelligent Charging System</p>
+                            <div className="mt-4 flex gap-4 text-sm">
+                                <div className="bg-blue-700 px-4 py-2 rounded">Alium Batteries</div>
+                                <div className="bg-blue-700 px-4 py-2 rounded">January 2026</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white border-b sticky top-0 z-10 shadow">
+                        <div className="max-w-6xl mx-auto px-8">
+                            <div className="flex gap-2 py-4 flex-wrap">
+                                <button
+                                    onClick={() => setActiveSection('overview')}
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
+                                        activeSection === 'overview' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+                                    }`}
+                                >
+                                    📄 Overview
+                                </button>
+                                <button
+                                    onClick={() => setActiveSection('timeline')}
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
+                                        activeSection === 'timeline' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+                                    }`}
+                                >
+                                    📅 Timeline
+                                </button>
+                                <button
+                                    onClick={() => setActiveSection('costs')}
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
+                                        activeSection === 'costs' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+                                    }`}
+                                >
+                                    💰 Costs
+                                </button>
+                                <button
+                                    onClick={() => setActiveSection('deliverables')}
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium ${
+                                        activeSection === 'deliverables' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+                                    }`}
+                                >
+                                    ⚙️ Deliverables
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-6xl mx-auto p-8">
+                        {activeSection === 'overview' && renderOverview()}
+                        {activeSection === 'timeline' && renderTimeline()}
+                        {activeSection === 'costs' && renderCosts()}
+                        {activeSection === 'deliverables' && renderDeliverables()}
+                    </div>
+
+                    <div className="bg-gray-800 text-white p-6 mt-8">
+                        <div className="max-w-6xl mx-auto text-center text-sm text-gray-400">
+                            <p>Confidential Proposal | Alium Batteries © 2026</p>
+                            <p className="mt-1">Prepared for Axon Enterprise</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<AxonChargerProposal />, document.getElementById('root'));
+    </script>
+</body>
+</html>
