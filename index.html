@@ -35,7 +35,7 @@
 
         const AxonChargerProposal = () => {
             const [activeSection, setActiveSection] = useState('overview');
-            const [editMode, setEditMode] = useState(true); // Start in edit mode
+            const [editMode, setEditMode] = useState(false); // Start in view mode
             
             // Header info - editable
             const [headerInfo, setHeaderInfo] = useState({
@@ -48,23 +48,41 @@
             // Charging Bay Specifications
             const [projectSpecs, setProjectSpecs] = useState([
                 { id: 1, name: 'Charging Bays', value: '6' },
-                { id: 2, name: 'Voltage Range', value: '10-17V' },
-                { id: 3, name: 'Max Current', value: '7A per bay' },
-                { id: 4, name: 'Efficiency', value: '94% DC/DC, 90% AC/DC' },
-                { id: 5, name: 'Pack Capacity', value: '6.38 Ah' },
-                { id: 6, name: 'Chemistry', value: 'LiPo' },
-                { id: 7, name: 'Operating Temp', value: '0-40°C' },
-                { id: 8, name: 'Storage Temp', value: '-25-75°C' }
+                { id: 2, name: 'Pack Voltage @ Each BaY', value: '10V-17V' },
+                { id: 3, name: 'Maximum Charging Current Per Bay', value: '7Amps' },
+                { id: 4, name: 'Charge Derating (1-4 Bays)', value: '7Amp Max. Each channel' },
+                { id: 5, name: 'Charge Derating (5 Bays)', value: '5.5Amp per Channel' },
+                { id: 6, name: 'Charge Derating (6 Bays)', value: '4.2Amp Max. Each Channel' },
+                { id: 7, name: 'Maximum Total DC Charger Current', value: '28 Amps' },
+                { id: 8, name: 'Input Voltage to Charging Dock', value: '19V+/-1V' },
+                { id: 9, name: 'Efficiency of Charging Dock - Full Load (DC-DC)', value: '> 95%' },
+                { id: 10, name: 'Charging Dock Protections', value: 'OCP, OCP, OTP, SCP' },
+                { id: 11, name: 'Bay Mating Connector', value: '1717840-2' },
+                { id: 12, name: 'Mating Connector Pinout', value: '1-4: PACK+ 5: SMB_DATA 6: SMB_CLOCK 7-10: PACK-' },
+                { id: 13, name: 'Charging Bay Operating Temp', value: '0C-40C' },
+                { id: 14, name: 'Charging Bat Storage Temp', value: '-20C to 70C' },
+                { id: 15, name: 'Charging Bay Cooling', value: 'Forced Air <=40dB at 1 meter' },
+                { id: 16, name: 'Charging Bay Inlet', value: 'DC 20V, 25Amp rated, 2(power)+2(signal)' },
+                { id: 17, name: 'Charging Bay to External Power supply Communication', value: 'CAN 2.0' },
+                { id: 18, name: 'Battery-Charging Bay COMMUNICATION', value: 'SMBus' }
             ]);
 
             // External Power Supply Specifications
             const [powerSupplySpecs, setPowerSupplySpecs] = useState([
-                { id: 1, name: 'Input Voltage', value: '100-240V AC' },
-                { id: 2, name: 'Input Frequency', value: '50/60 Hz' },
-                { id: 3, name: 'Output Power', value: '300W' },
-                { id: 4, name: 'Output Voltage', value: '24V DC' },
-                { id: 5, name: 'Efficiency', value: '90% typical' },
-                { id: 6, name: 'Power Factor', value: '>0.9' }
+                { id: 1, name: 'Input AC Voltage', value: '85-264VAC' },
+                { id: 2, name: 'Input Frequency', value: '47/63 Hz' },
+                { id: 3, name: 'Output Power', value: '500W' },
+                { id: 4, name: 'Output Voltage', value: '19V+/-1V DC' },
+                { id: 5, name: 'Efficiency', value: '> 93% full load' },
+                { id: 6, name: 'Power Factor', value: '>0.9' },
+                { id: 7, name: 'Protections', value: 'OCP, OVP, OTP, SCP, UVP' },
+                { id: 8, name: 'Mechanical Enclosure', value: 'Aluminum Enclosure' },
+                { id: 9, name: 'IP rating', value: 'IP65' },
+                { id: 10, name: 'Cooling', value: 'Forced Air Cooling' },
+                { id: 11, name: 'Safety Specifications', value: 'IEC626368, IEC60335, FCC/CISPR Part 15B Class B, IEC61000-4-2, IEC61000-4-4, IEC61000-4-5, IEC61000-3-2, IEC61000-3-3' },
+                { id: 12, name: 'AC Inlet', value: 'IEC 60320 C-14' },
+                { id: 13, name: 'Communication to Charging Bay', value: 'CAN 2.0' },
+                { id: 14, name: 'DC output connector', value: '1m Cable with Mating connector to Charging Bay' }
             ]);
 
             const [stageGates, setStageGates] = useState([
@@ -73,173 +91,158 @@
                     stage: 1,
                     name: 'Kick Off',
                     duration: '1-2 Weeks',
-                    nreCost: 8000,
+                    nreCost: 10000,
                     activities: [
                         'Conduct kick-off meeting with Axon',
                         'Establish project team and protocols',
                         'Review mechanical design package',
                         'Initiate risk assessment',
-                        'Define testing fixture requirements'
+                        'Define testing fixture requirements',
+                        'Establish Development Timelines'
                     ],
                     deliverables: [
-                        'Project charter',
-                        'Risk assessment report',
-                        'Specification confirmation',
-                        'Thermal analysis plan'
+                        'Detailed Product plan and Timelines',
+                        'Risk Assessment',
+                        'Specification Signoff'
                     ]
                 },
                 {
                     id: 2,
                     stage: 2,
-                    name: 'Freeze Specifications',
-                    duration: '2-3 Weeks',
+                    name: 'Prototype Development',
+                    duration: '10-12 Weeks',
                     nreCost: 35000,
                     activities: [
                         'Develop system architecture',
                         'Select power topology',
                         'Choose core components',
-                        'Design SMBus architecture',
-                        'Develop scaling algorithm',
+                        'Design SMBus & CAN architecture',
+                        'Control Logic + SMBus + CAN communication - Firmware development',
                         'Create preliminary schematics',
-                        'Define cooling strategy'
-                    ],
-                    deliverables: [
-                        'Finalized specifications',
-                        'Electrical architecture',
-                        'Component selection report',
-                        'Thermal simulation',
-                        'Verification testing plan'
-                    ]
-                },
-                {
-                    id: 3,
-                    stage: 3,
-                    name: 'Proto Build Complete',
-                    duration: '16-18 Weeks',
-                    nreCost: 62000,
-                    activities: [
+                        'Define cooling strategy',
+                        'Charing Bay Mechanical Concept Development',
+                        'External Charger Concept Development',
                         'Design AC/DC power supply',
                         'Design DC/DC converters',
-                        'Implement protection circuits',
-                        'Design SMBus interface',
                         'Develop charge control firmware',
                         'Design thermal management',
-                        'Create PCB layout',
-                        'Fabricate 10 prototypes'
+                        'Finish Schematic & PCB Layout',
+                        'Establish Sourcing Channel for Prototype parts',
+                        '3D printing/Vacuum casting for plastics, CNC for Metal parts',
+                        'Order All parts from Approved suppliers',
+                        'Fabricate 10 prototypes',
+                        'Firmware programming and functional testing',
+                        'Design Review with Axon'
                     ],
                     deliverables: [
+                        'Electrical architecture',
+                        'Component selection report',
+                        'Verification testing plan',
                         'Complete schematics',
                         'PCB layout and BOM',
                         'Firmware source code',
-                        'SMBus protocol docs',
-                        '10 prototype units',
-                        'Test fixtures'
+                        'SMBus and CAN protocol documentation',
+                        '10 Functional Prototypes',
+                        'Prototype Test reports',
+                        'List of improvements and changes for Next Stage'
                     ]
                 },
                 {
                     id: 4,
-                    stage: 4,
-                    name: 'Proto Testing Complete',
-                    duration: '10-12 Weeks',
-                    nreCost: 58000,
+                    stage: 3,
+                    name: 'Detailed Development Complete',
+                    duration: '8-10 Weeks',
+                    nreCost: 25000,
                     activities: [
-                        'Efficiency testing',
-                        'Verify current scaling',
-                        'Test SMBus communication',
-                        'Validate protection circuits',
                         'Thermal testing',
-                        'Acoustic noise testing',
                         'Environmental testing',
-                        'Pre-compliance EMI/EMC'
+                        'Pre-compliance EMI/EMC',
+                        'Usability study',
+                        'Mechanical Design Improvements',
+                        'Electronics Design Improvements',
+                        'Fimware Design Improvements',
+                        'Supplier qualification',
+                        'Estimated Production and Tooling costs from suppliers',
+                        'Order 10 prototypes',
+                        'Prototype Build',
+                        'Execute Hardware Verification Testing as per Verification Prototcol',
+                        'Execute Firmware Verification Testing as per Verification Protocol',
+                        'Production Fixturing Plan',
+                        'Risk Assessment - DFMEA',
+                        'Design review with Axon'
                     ],
                     deliverables: [
-                        'Test reports',
                         'Efficiency curves',
                         'Thermal analysis',
                         'EMI/EMC reports',
-                        'Firmware validation',
-                        'Optimization recommendations'
+                        'Firmware Verification Test Reports',
+                        'Hardware Verification Test Reports',
+                        'Tooling and Production quotes',
+                        'Plan for Production'
                     ]
                 },
                 {
                     id: 5,
-                    stage: 5,
-                    name: 'DVT Build Complete',
+                    stage: 4,
+                    name: 'PPAP Build',
                     duration: '14-16 Weeks',
-                    nreCost: 22000,
+                    nreCost: 10000,
                     activities: [
-                        'Refine design',
-                        'Optimize PCB layout',
-                        'Finalize component sourcing',
-                        'Kick off tooling',
-                        'Update firmware',
-                        'Build 25 DVT units'
+                        'Kick off tooling Order Production Tooling',
+                        'Order Production Fixturing',
+                        'Production SOP\'s, WI, production process validation',
+                        'Fixtures validation',
+                        'Build 50 PPAP units for production validation and quality control',
+                        'Lock in Firmware',
+                        'Regulatory certifications - IEC/UL, REACH, ROHS',
+                        'Design Review with Axon'
                     ],
                     deliverables: [
                         'Finalized schematics',
                         'Production BOM',
                         'DFMEA',
                         'Tooling quotes',
-                        '25 DVT units',
-                        'Updated firmware'
-                    ]
-                },
-                {
-                    id: 6,
-                    stage: 6,
-                    name: 'DVT Testing Complete',
-                    duration: '12-14 Weeks',
-                    nreCost: 65000,
-                    activities: [
-                        'Full regulatory testing',
-                        'Complete EMC testing',
-                        'Safety certification',
-                        'Comprehensive DVT testing',
-                        'Reliability testing',
-                        'Environmental screening',
-                        'RoHS/REACH verification'
-                    ],
-                    deliverables: [
-                        'Regulatory certificates',
-                        'Complete DVT reports',
-                        'Reliability analysis',
-                        'Compliance documentation',
-                        'PFMEA'
+                        '50 PPAP units',
+                        'Updated firmware',
+                        'Production build timelines with leadtimes',
+                        'Regulatory certification Reports',
+                        'PPAP DOCUMENTATION'
                     ]
                 },
                 {
                     id: 7,
-                    stage: 7,
-                    name: 'PPAP & Production Ready',
+                    stage: 5,
+                    name: 'Production Ready',
                     duration: '8-10 Weeks',
-                    nreCost: 20000,
+                    nreCost: 10000,
                     activities: [
                         'Compile design package',
                         'Final design review',
                         'Prepare production docs',
                         'Support production setup',
                         'Train production team',
-                        'Validate test fixtures'
+                        'Validate test fixtures',
+                        'First Production Bulild'
                     ],
                     deliverables: [
                         'Complete source files',
-                        'PPAP documentation',
-                        'Production instructions',
-                        'Test fixture docs',
+                        'Test fixture documentation',
                         'Final project report',
-                        'Certificate of Conformance'
+                        'Certificate of Conformance',
+                        'Production Documentation',
+                        'Production Quantity Delivery'
                     ]
                 }
             ]);
 
             const [costItems, setCostItems] = useState([
-                { id: 1, item: 'Proto Tooling & Setup', cost: 18000 },
+                { id: 1, item: 'Prototype tools', cost: 7000 },
                 { id: 2, item: 'Proto 10 Samples', cost: 15000 },
-                { id: 3, item: 'Pre-Compliance Testing', cost: 28000 },
-                { id: 4, item: 'DVT Tooling', cost: 42000 },
-                { id: 5, item: 'DVT 25 Samples', cost: 35000 },
-                { id: 6, item: 'Test Fixtures', cost: 25000 },
-                { id: 7, item: 'Compliance Testing', cost: 95000 }
+                { id: 3, item: 'Pre-Compliance Testing', cost: 18000 },
+                { id: 4, item: 'PPAP Tooling', cost: 42000 },
+                { id: 5, item: 'PPAP 50 Samples', cost: 15000 },
+                { id: 6, item: 'Test Fixtures', cost: 12000 },
+                { id: 7, item: 'Compliance Testing', cost: 55000 }
             ]);
 
             const [deliverableCategories, setDeliverableCategories] = useState([
@@ -265,8 +268,7 @@
                         'SMBus protocol implementation',
                         'Current scaling logic',
                         'State machine diagrams',
-                        'Field update procedures',
-                        'Software DFMEA'
+                        'Field update procedures'
                     ]
                 },
                 {
@@ -293,6 +295,17 @@
                         'Quality control procedures',
                         'Certificate of Conformance',
                         'RoHS/REACH compliance'
+                    ]
+                },
+                {
+                    id: 5,
+                    title: 'Mechanical Design',
+                    items: [
+                        '3D CAD models',
+                        'Simulation Results',
+                        'Bill of materials',
+                        'DFMEA documentation',
+                        'Drop & Vibration Test reports'
                     ]
                 }
             ]);
